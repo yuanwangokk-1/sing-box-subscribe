@@ -109,6 +109,6 @@ docker run -p 5000:5000 sing-box:latest
 
 
 
-```json
+```js
 https://github.com/Toperlock/sing-box-subscribe
 ```
