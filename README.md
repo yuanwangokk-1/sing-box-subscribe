@@ -1,3 +1,8 @@
+```js
+https://github.com/Toperlock/sing-box-subscribe
+```
+
+
 # 操作说明去看[英文文档](https://github.com/Toperlock/sing-box-subscribe/blob/main/instructions/README.md)，中文文档操作说明不再提供
 
 # 免责声明：sing-box-subscribe.vercel.app域名目前已被其他人占用，与本项目无关。后果自负
