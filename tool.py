@@ -1,26 +1,32 @@
-import base64,requests,random,string,re,chardet
+import base64, requests, random, string, re, chardet
 import warnings
 from cryptography.utils import CryptographyDeprecationWarning
+
 with warnings.catch_warnings(action="ignore", category=CryptographyDeprecationWarning):
     import paramiko
 from scp import SCPClient
 
+
 def get_encoding(file):
-    with open(file,'rb') as f:
+    with open(file, 'rb') as f:
         return chardet.detect(f.read())['encoding']
-    
-def saveFile(path,content):
-    file = open(path, mode='w',encoding='utf-8')
+
+
+def saveFile(path, content):
+    file = open(path, mode='w', encoding='utf-8')
     file.write(content)
     file.close()
 
+
 regex_patterns = {
-    '🇭🇰': re.compile(r'香港|沪港|呼港|中港|HKT|HKBN|HGC|WTT|CMI|穗港|广港|京港|🇭🇰|HK|Hongkong|Hong Kong|HongKong|HONG KONG'),
+    '🇭🇰': re.compile(
+        r'香港|沪港|呼港|中港|HKT|HKBN|HGC|WTT|CMI|穗港|广港|京港|🇭🇰|HK|Hongkong|Hong Kong|HongKong|HONG KONG'),
     '🇹🇼': re.compile(r'台湾|台灣|臺灣|台北|台中|新北|彰化|台|CHT|HINET|TW|Taiwan|TAIWAN'),
     '🇲🇴': re.compile(r'澳门|澳門|(\s|-)?MO\d*|CTM|MAC|Macao|Macau'),
     '🇸🇬': re.compile(r'新加坡|狮城|獅城|沪新|京新|泉新|穗新|深新|杭新|广新|廣新|滬新|SG|Singapore|SINGAPORE'),
     '🇯🇵': re.compile(r'日本|东京|東京|大阪|埼玉|京日|苏日|沪日|广日|上日|穗日|川日|中日|泉日|杭日|深日|JP|Japan|JAPAN'),
-    '🇺🇸': re.compile(r'美国|美國|京美|硅谷|凤凰城|洛杉矶|西雅图|圣何塞|芝加哥|哥伦布|纽约|广美|(\s|-)?(?<![AR])US\d*|USA|America|United States'),
+    '🇺🇸': re.compile(
+        r'美国|美國|京美|硅谷|凤凰城|洛杉矶|西雅图|圣何塞|芝加哥|哥伦布|纽约|广美|(\s|-)?(?<![AR])US\d*|USA|America|United States'),
     '🇰🇷': re.compile(r'韩国|韓國|首尔|首爾|韩|韓|春川|KOR|KR|Kr|(?<!North\s)Korea'),
     '🇰🇵': re.compile(r'朝鲜|KP|North Korea'),
     '🇷🇺': re.compile(r'俄罗斯|俄羅斯|毛子|俄国|RU|RUS|Russia'),
@@ -156,8 +162,11 @@ regex_patterns = {
     '🇭🇳': re.compile(r'洪都拉斯|Honduras'),
     '🇳🇮': re.compile(r'尼加拉瓜|(\s|-)?NI\d*|Nicaragua'),
     '🇦🇶': re.compile(r'南极|南極|(\s|-)?AQ\d*|Antarctica'),
-    '🇨🇳': re.compile(r'中国|中國|江苏|北京|上海|广州|深圳|杭州|徐州|青岛|宁波|镇江|沈阳|济南|回国|back|(\s|-)?CN(?!2GIA)\d*|China'),
+    '🇨🇳': re.compile(
+        r'中国|中國|江苏|北京|上海|广州|深圳|杭州|徐州|青岛|宁波|镇江|沈阳|济南|回国|back|(\s|-)?CN(?!2GIA)\d*|China'),
 }
+
+
 def rename(input_str):
     for country_code, pattern in regex_patterns.items():
         if input_str.startswith(country_code):
@@ -169,16 +178,19 @@ def rename(input_str):
                 return country_code + ' ' + input_str
     return input_str
 
+
 def b64Decode(str):
     str = str.strip()
-    str += (len(str)%4)*'='
+    str += (len(str) % 4) * '='
     return base64.urlsafe_b64decode(str)
 
+
 def readFile(path):
-    file = open(path,'rb')
+    file = open(path, 'rb')
     content = file.read()
     file.close()
     return content
+
 
 def noblankLine(data):
     lines = data.splitlines()
@@ -186,11 +198,12 @@ def noblankLine(data):
     for index in range(len(lines)):
         line = lines[index]
         t = line.strip()
-        if len(t)>0:
+        if len(t) > 0:
             newdata += t
-            if index+1<len(lines):
+            if index + 1 < len(lines):
                 newdata += '\n'
     return newdata
+
 
 def firstLine(data):
     lines = data.splitlines()
@@ -199,14 +212,17 @@ def firstLine(data):
         if line:
             return line
 
+
 def genName(length=8):
     name = ''
     for i in range(length):
-        name += random.choice(string.ascii_letters+string.digits)
+        name += random.choice(string.ascii_letters + string.digits)
     return name
 
+
 def is_ip(str):
-    return re.search(r'^\d+\.\d+\.\d+\.\d+$',str)
+    return re.search(r'^\d+\.\d+\.\d+\.\d+$', str)
+
 
 def get_protocol(s):
     try:
@@ -228,33 +244,37 @@ def get_protocol(s):
             m = re.search(r'^(.+?)://', s)
         return m.group(1)
 
-def checkKeywords(keywords,str):
+
+def checkKeywords(keywords, str):
     if not keywords:
         return False
     for keyword in keywords:
-        if str.find(keyword)>-1:
+        if str.find(keyword) > -1:
             return True
     return False
 
-def filterNodes(nodelist,keywords):
+
+def filterNodes(nodelist, keywords):
     newlist = []
     if not keywords:
         return nodelist
     for node in nodelist:
-        if not checkKeywords(keywords,node['name']):
+        if not checkKeywords(keywords, node['name']):
             newlist.append(node)
         else:
-            print('过滤节点名称 '+node['name'])
-            print('Lọc tên proxy'+node['name'])
+            print('过滤节点名称 ' + node['name'])
+            print('Lọc tên proxy' + node['name'])
     return newlist
 
-def replaceStr(nodelist,keywords):
+
+def replaceStr(nodelist, keywords):
     if not keywords:
         return nodelist
     for node in nodelist:
         for k in keywords:
-            node['name'] = node['name'].replace(k,'').strip()
+            node['name'] = node['name'].replace(k, '').strip()
     return nodelist
+
 
 def proDuplicateNodeName(nodes):
     names = []
@@ -268,69 +288,75 @@ def proDuplicateNodeName(nodes):
                 index += 1
             names.append(node['tag'])
 
+
 def removeNodes(nodelist):
     newlist = []
-    temp_list=[]
-    i=0
+    temp_list = []
+    i = 0
     for node in nodelist:
-        _node = {'server':node['server'],'port':node['port']}
+        _node = {'server': node['server'], 'port': node['port']}
         if _node in temp_list:
-            i+=1
+            i += 1
         else:
             temp_list.append(_node)
             newlist.append(node)
-    print('去除了 '+str(i)+' 个重复节点')
-    print('Đã xóa các proxy trùng lặp '+str(i))
-    print('实际获取 '+str(len(newlist))+' 个节点')
-    print('Thực tế nhận được '+str(len(newlist))+' proxy')
+    print('去除了 ' + str(i) + ' 个重复节点')
+    print('Đã xóa các proxy trùng lặp ' + str(i))
+    print('实际获取 ' + str(len(newlist)) + ' 个节点')
+    print('Thực tế nhận được ' + str(len(newlist)) + ' proxy')
     return newlist
 
-def prefixStr(nodelist,prestr):
+
+def prefixStr(nodelist, prestr):
     for node in nodelist:
-        node['name'] = prestr+node['name'].strip()
+        node['name'] = prestr + node['name'].strip()
     return nodelist
+
 
 def getResponse(url, custom_user_agent=None):
     response = None
     headers = {
         'User-Agent': custom_user_agent if custom_user_agent else 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Safari/605.1.15'
-        #'User-Agent': 'clash.meta'
+        # 'User-Agent': 'clash.meta'
     }
     try:
-        response = requests.get(url,headers=headers,timeout=5000)
-        if response.status_code==200:
+        response = requests.get(url, headers=headers, timeout=5000)
+        if response.status_code == 200:
             return response
         else:
             return None
     except:
         return None
-    
+
+
 class ConfigSSH:
-    server = {'ip':None,'port':22,'user':None,'password':''}
-    def __init__(self,server:dict) -> None:
+    server = {'ip': None, 'port': 22, 'user': None, 'password': ''}
+
+    def __init__(self, server: dict) -> None:
         for k in self.server:
             if k != 'port' and not k in server.keys():
                 return None
             if k in server.keys():
                 self.server[k] = server[k]
+
     def connect(self):
         ssh = paramiko.SSHClient()
         ssh.load_system_host_keys()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(hostname=self.server['ip'],port=22, username=self.server['user'], password=self.server['password'])
+        ssh.connect(hostname=self.server['ip'], port=22, username=self.server['user'], password=self.server['password'])
         self.ssh = ssh
 
-    def execCMD(self,command:str):
-        stdin, stdout, stderr = self.ssh.exec_command(command) 
-        print(stdout.read().decode('utf-8')) 
+    def execCMD(self, command: str):
+        stdin, stdout, stderr = self.ssh.exec_command(command)
+        print(stdout.read().decode('utf-8'))
 
-    def uploadFile(self,source:str,target:str):
+    def uploadFile(self, source: str, target: str):
         scp = SCPClient(self.ssh.get_transport())
         scp.put(source, recursive=True, remote_path=target)
 
-    def getFile(self,remote:str,local:str):
+    def getFile(self, remote: str, local: str):
         scp = SCPClient(self.ssh.get_transport())
-        scp.get(remote,local)
+        scp.get(remote, local)
 
     def close(self):
         self.ssh.close()

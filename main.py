@@ -168,7 +168,8 @@ def get_nodes(url):
         elif 'outbounds' in content:
             outbounds = []
             excluded_types = {"selector", "urltest", "direct", "block", "dns"}
-            filtered_outbounds = [outbound for outbound in content['outbounds'] if outbound.get("type") not in excluded_types]
+            filtered_outbounds = [outbound for outbound in content['outbounds'] if
+                                  outbound.get("type") not in excluded_types]
             outbounds.extend(filtered_outbounds)
             return outbounds
     else:
@@ -197,7 +198,7 @@ def parse_content(content):
             continue
         try:
             node = factory(t)
-        except Exception as e:  #节点解析失败，跳过
+        except Exception as e:  # 节点解析失败，跳过
             pass
         if node:
             nodelist.append(node)
@@ -250,7 +251,7 @@ def get_content_from_url(url, n=10):
     try:
         response_content = response.content
         response_text = response_content.decode('utf-8-sig')  # utf-8-sig 可以忽略 BOM
-        #response_encoding = response.encoding
+        # response_encoding = response.encoding
     except:
         return ''
     if response_text.isspace():
@@ -265,7 +266,7 @@ def get_content_from_url(url, n=10):
         return response_text
     elif 'proxies' in response_text:
         yaml_content = response.content.decode('utf-8')
-        response_text_no_tabs = yaml_content.replace('\t', ' ') #fuckU
+        response_text_no_tabs = yaml_content.replace('\t', ' ')  # fuckU
         yaml = ruamel.yaml.YAML()
         try:
             response_text = dict(yaml.load(response_text_no_tabs))
@@ -438,13 +439,15 @@ def combin_to_config(config, data):
                             i += 1
                         else:
                             out["outbounds"].insert(i, (group.rsplit("-", 1)[0]).rsplit("-", 1)[-1])
-            new_outbound = {'tag': (group.rsplit("-", 1)[0]).rsplit("-", 1)[-1], 'type': 'selector', 'outbounds': ['{' + group + '}']}
+            new_outbound = {'tag': (group.rsplit("-", 1)[0]).rsplit("-", 1)[-1], 'type': 'selector',
+                            'outbounds': ['{' + group + '}']}
             config_outbounds.insert(-4, new_outbound)
             if 'subgroup' not in group:
                 for out in config_outbounds:
                     if out.get("outbounds"):
                         if out['tag'] == 'Proxy':
-                            out["outbounds"] = [out["outbounds"]] if isinstance(out["outbounds"], str) else out["outbounds"]
+                            out["outbounds"] = [out["outbounds"]] if isinstance(out["outbounds"], str) else out[
+                                "outbounds"]
                             out["outbounds"].append('{' + group + '}')
     temp_outbounds = []
     if config_outbounds:

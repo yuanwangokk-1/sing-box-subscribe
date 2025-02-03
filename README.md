@@ -1,10 +1,7 @@
-```
-https://github.com/Toperlock/sing-box-subscribe
-```
-
 # 操作说明去看[英文文档](https://github.com/Toperlock/sing-box-subscribe/blob/main/instructions/README.md)，中文文档操作说明不再提供
 
 # 免责声明：sing-box-subscribe.vercel.app域名目前已被其他人占用，与本项目无关。后果自负
+
 ![image](https://github.com/Toperlock/sing-box-subscribe/assets/86833913/f9af80bc-f1b7-45dd-a2eb-e26910069f21)
 
 ### 使用 `/config/URL` 添加参数符号已修改，从原来的 `/&` 改为 `&`。有问题请提issue，不要打扰 `sing-box`
@@ -39,6 +36,7 @@ docker run -p 5000:5000 sing-box:latest
 ### 根据已有的qx，surge，loon，clash规则列表自定义规则集[https://github.com/Toperlock/sing-box-geosite](https://github.com/Toperlock/sing-box-geosite)
 
 ### wechat规则集源文件写法：
+
 ```json
 {
   "version": 1,
@@ -100,7 +98,9 @@ docker run -p 5000:5000 sing-box:latest
   ]
 }
 ```
+
 配置文件添加源文件规则集：
+
 ```
 {
   "tag": "geosite-wechat",
