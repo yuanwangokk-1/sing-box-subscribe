@@ -1,4 +1,4 @@
-```json
+```https
 https://github.com/Toperlock/sing-box-subscribe
 ```
 
